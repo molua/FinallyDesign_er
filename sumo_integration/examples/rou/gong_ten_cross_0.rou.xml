@@ -1,0 +1,44 @@
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+   <vType id="v0" accel="0.8" decel="4.5" sigma="0" length="5" minGap="2" maxSpeed="70"/>
+   <vType id="v1" accel="0.8" decel="4.5" sigma="0" length="5" minGap="2" maxSpeed="70" color="1,0,0"/>
+   <vType id="v2" accel="0.8" decel="4.5" sigma="0" length="5" minGap="2" maxSpeed="70" color="0,1,0"/>
+   <vType id="v3" accel="0.8" decel="4.5" sigma="0" length="5" minGap="2" maxSpeed="70"/>
+   
+   <route id="S2N" edges="3 2"/>
+   <flow id="S2N" begin="0" number="30" route="S2N" type="v0" departPos="base" departLane="best"></flow>
+
+   <route id="S2W" edges="3 0"/>
+   <flow id="S2W" begin="0" number="10" route="S2W" type="v0" departPos="base" departLane="best"></flow>
+
+   <route id="S2E" edges="3 -1"/>
+   <flow id="S2E" begin="0" number="10" route="S2E" type="v0" departPos="base" departLane="best"></flow>
+
+   <route id="W2E" edges="-0 -1"/>
+   <flow id="W2E" begin="0" number="10" route="W2E" type="v1" departPos="base" departLane="best"></flow>
+
+   <route id="W2N" edges="-0 2"/>
+   <flow id="W2N" begin="0" number="10" route="W2N" type="v1" departPos="base" departLane="best"></flow>
+
+   <route id="W2S" edges="-0 -3"/>
+   <flow id="W2S" begin="0" number="10" route="W2S" type="v1" departPos="base" departLane="best"></flow>
+
+   <route id="E2W" edges="1 0"/>
+   <flow id="E2W" begin="0" number="10" route="E2W" type="v2" departPos="base" departLane="best"></flow>
+
+   <route id="E2S" edges="1 -3"/>
+   <flow id="E2S" begin="0" number="10" route="E2S" type="v2" departPos="base" departLane="best"></flow>
+
+   <route id="E2N" edges="1 2"/>
+   <flow id="E2N" begin="0" number="10" route="E2N" type="v2" departPos="base" departLane="best"></flow>
+
+   <route id="N2S" edges="-2 -3"/>
+   <flow id="N2S" begin="0" number="10" route="N2S" type="v3" departPos="base" departLane="best"></flow>
+
+   <route id="N2E" edges="-2 -1"/>
+   <flow id="N2E" begin="0" number="10" route="N2E" type="v3" departPos="base" departLane="best"></flow>
+
+   <route id="N2W" edges="-2 0"/>
+   <flow id="N2W" begin="0" number="5" route="N2W" type="v3" departPos="base" departLane="best"></flow>
+
+</routes>
+
