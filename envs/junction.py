@@ -142,6 +142,9 @@ class Junc:
     def get_sum_emergy_wait(self):
         return self.lane_0.emergy_wait + self.lane_1.emergy_wait + self.lane_2.emergy_wait
 
+    def get_sum_emergy_wait_0(self):
+        return self.lane_0.emergy_wait_0 + self.lane_1.emergy_wait_0 + self.lane_2.emergy_wait_0
+
     def get_sum_all_wait_per_lane_ave(self):
         if self.lane_0.track_num != 0 and self.lane_1.track_num != 0 and self.lane_2.track_num != 0:
             return self.lane_0.all_wait / self.lane_0.track_num + self.lane_1.all_wait / self.lane_1.track_num + self.lane_2.all_wait / self.lane_2.track_num
@@ -172,16 +175,28 @@ class Junc:
             # 获取类型为"emerge"的车辆在当前时间步的等待时间，并记录到列表中
             for vid in vehicles_on_lane:
                 waiting_time = []
+                waiting_time_0 = []
                 vehicle_type = traci.vehicle.getTypeID(vid)
                 if vehicle_type == "emerge":
-                    waiting_time.append(traci.vehicle.getWaitingTime(vid))
+                    if traci.vehicle.getWaitingTime(vid) != 0:  # 排除掉车辆等待时间为0的情况
+                        waiting_time.append(traci.vehicle.getWaitingTime(vid))
+                elif vehicle_type == "emerge_0":
+                    if traci.vehicle.getWaitingTime(vid) != 0:
+                        waiting_time_0.append(traci.vehicle.getWaitingTime(vid))
                 if waiting_time:
                     lane.emergy_num = len(waiting_time)
                     lane.emergy_wait = sum(waiting_time)
                     lane.emerge_max_wait = max(waiting_time)
+                if waiting_time_0:
+                    lane.emergy_num_0 = len(waiting_time_0)
+                    lane.emergy_wait_0 = sum(waiting_time_0)
+                    lane.emerge_max_wait_0 = max(waiting_time_0)
 
     def get_sum_max_emerge_wait(self):
         return max(self.lane_0.emerge_max_wait, self.lane_1.emerge_max_wait, self.lane_2.emerge_max_wait)
+
+    def get_sum_max_emerge_wait_0(self):
+        return max(self.lane_0.emerge_max_wait_0, self.lane_1.emerge_max_wait_0, self.lane_2.emerge_max_wait_0)
 
     def emergy_max_wait_reset(self):
         self.lane_0.emerge_max_wait = 0
@@ -190,3 +205,6 @@ class Junc:
 
     def get_sum_emerge_num(self):
         return self.lane_0.emergy_num + self.lane_1.emergy_num + self.lane_2.emergy_num
+
+    def get_sum_emerge_num_0(self):
+        return self.lane_0.emergy_num_0 + self.lane_1.emergy_num_0 + self.lane_2.emergy_num_0

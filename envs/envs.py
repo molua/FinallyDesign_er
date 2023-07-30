@@ -60,9 +60,12 @@ class CoEnvs(gym.Env):
         self.last_sum_all_wait_detail = [0, 0, 0, 0]
         self.last_sum_max_wait = 0
         self.last_emergy_wait = 0
+        self.last_emergy_wait_0 = 0
         self.last_stop_vehicle = 0
         self.last_sum_emergy_max_wait = 0
+        self.last_sum_emergy_max_wait_0 = 0
         self.last_sum_emergy_num = 0
+        self.last_sum_emergy_num_0 = 0
         self.last_sum_all_wait_per_lane_ave = 0
         self.last_sum_all_wait_per_lane_ave_max = 0
         self.w_max_wait = args.w_max_wait
@@ -362,6 +365,11 @@ class CoEnvs(gym.Env):
         self.summary_writer.add_scalar('ave_wait', self.metrics[-1]['ave_wait'], self.run * 3600 + self.e.frameCounter * self.step_length)
         self.summary_writer.add_scalar('reward', self.metrics[-1]['reward'], self.run * 3600 + self.e.frameCounter * self.step_length)
         self.summary_writer.add_scalar('stop_time', self.metrics[-1]['stop_time'], self.run * 3600 + self.e.frameCounter * self.step_length)
+        self.summary_writer.add_scalar('emergy_max_wait', self.metrics[-1]['emergy_max_wait'], self.run * 3600 + self.e.frameCounter * self.step_length)
+        self.summary_writer.add_scalar('emergy_wait', self.metrics[-1]['emergy_wait'], self.run * 3600 + self.e.frameCounter * self.step_length)
+        self.summary_writer.add_scalar('emergy_max_wait_0', self.metrics[-1]['emergy_max_wait_0'], self.run * 3600 + self.e.frameCounter * self.step_length)
+        self.summary_writer.add_scalar('emergy_wait_0', self.metrics[-1]['emergy_wait_0'], self.run * 3600 + self.e.frameCounter * self.step_length)
+
         # print(self.e.frameCounter * self.step_length, done, reward, action, traci.trafficlight.getRedYellowGreenState('4'),self.metrics[-1])
 
         # return observation, reward, done, self.metrics[-1], self.traffic_signal.green_phase
@@ -471,6 +479,12 @@ class CoEnvs(gym.Env):
             sum_emergy_wait = self.n.get_sum_emergy_wait() + self.s.get_sum_emergy_wait() + self.e.get_sum_emergy_wait() + self.w.get_sum_emergy_wait()
             sum_emergy_max_wait = max(self.n.get_sum_max_emerge_wait(), self.s.get_sum_max_emerge_wait(), self.e.get_sum_max_emerge_wait(), self.w.get_sum_max_emerge_wait())
             sum_emergy_num = self.n.get_sum_emerge_num() + self.s.get_sum_emerge_num() + self.e.get_sum_emerge_num() + self.w.get_sum_emerge_num()
+
+            sum_emergy_wait_0 = self.n.get_sum_emergy_wait_0() + self.s.get_sum_emergy_wait_0() + self.e.get_sum_emergy_wait_0() + self.w.get_sum_emergy_wait_0()
+            sum_emergy_max_wait_0 = max(self.n.get_sum_max_emerge_wait_0(), self.s.get_sum_max_emerge_wait_0(),
+                                      self.e.get_sum_max_emerge_wait_0(), self.w.get_sum_max_emerge_wait_0())
+            sum_emergy_num_0 = self.n.get_sum_emerge_num_0() + self.s.get_sum_emerge_num_0() + self.e.get_sum_emerge_num_0() + self.w.get_sum_emerge_num_0()
+
             # 停车次数
             stop_time = self.n.sum_stop_time() + self.s.sum_stop_time() + self.e.sum_stop_time() + self.w.sum_stop_time()
             if sum_all_wait != 0:
@@ -499,7 +513,10 @@ class CoEnvs(gym.Env):
             # reward = np.around(self.w_max_wait * reward_sum_max_wait + self.w_all_wait * reward_sum_all_wait, 2)
             # print(f'time: {self.e.frameCounter*self.step_length}, last_sum_all_wait: {self.last_sum_all_wait}, sum_all_wait: {sum_all_wait}, self.last_sum_max_wait: {self.last_sum_max_wait}, sum_max_wait: {sum_max_wait}, reward: {reward}, signal: {self.traffic_signal.green_phase}', end='')
 
-            reward = self.only_wait_all_time_reward(sum_all_wait) + self.only_wait_max_time_reward(sum_max_wait) + self.only_emerge_all_wait(sum_emergy_wait) * 2 + self.only_emergy_max_wait(sum_emergy_max_wait) * 2 + self.only_emerge_num(sum_emergy_num) * 2
+            reward = self.only_wait_all_time_reward(sum_all_wait) + self.only_wait_max_time_reward(sum_max_wait) \
+                     + self.only_emerge_all_wait(sum_emergy_wait) * 2 + self.only_emergy_max_wait(sum_emergy_max_wait) * 2 + self.only_emerge_num(sum_emergy_num) * 2 \
+                     + self.only_emerge_all_wait_0(sum_emergy_wait_0) + self.only_emergy_max_wait_0(sum_emergy_max_wait_0) + self.only_emerge_num_0(sum_emergy_num_0)
+
 
             if self.traffic_signal.green_phase == 0:
                 ac = '南=北'
@@ -514,12 +531,15 @@ class CoEnvs(gym.Env):
             self.last_sum_all_wait_detail = sum_all_wait_detail
             self.last_sum_max_wait = sum_max_wait
             self.last_emergy_wait = sum_emergy_wait
+            self.last_emergy_wait_0 = sum_emergy_wait_0
             self.last_sum_all_wait_per_lane_ave = sum_all_wait_per_lane_ave
             self.last_sum_all_wait_per_lane_ave_max = sum_all_wait_per_lane_ave_max
             self.last_reward = reward
             self.last_stop_time = stop_time
             self.last_sum_emergy_max_wait = sum_emergy_max_wait
+            self.last_sum_emergy_max_wait_0 = sum_emergy_max_wait_0
             self.last_sum_emergy_num = sum_emergy_num
+            self.last_sum_emergy_num_0 = sum_emergy_num_0
 
             return reward
 
@@ -547,6 +567,15 @@ class CoEnvs(gym.Env):
     def only_emergy_max_wait(self, sum_emergy_max_wait):
         return self.last_sum_emergy_max_wait - sum_emergy_max_wait
 
+    def only_emerge_all_wait_0(self, sum_emergy_wait_0):
+        return self.last_emergy_wait_0 - sum_emergy_wait_0
+
+    def only_emerge_num_0(self, sum_emergy_num_0):
+        return self.last_sum_emergy_num_0 - sum_emergy_num_0
+
+    def only_emergy_max_wait_0(self, sum_emergy_max_wait_0):
+        return self.last_sum_emergy_max_wait_0 - sum_emergy_max_wait_0
+
     def _compute_done(self):
         assert self.e.frameCounter == self.n.frameCounter == self.w.frameCounter == self.s.frameCounter
         return self.e.frameCounter * self.step_length > self.episode_length
@@ -564,9 +593,12 @@ class CoEnvs(gym.Env):
             'all_wait': self.last_sum_all_wait,  # 所有车道在上一仿真步骤中的停止车辆的总数。
             'max_wait': self.last_sum_max_wait,
             'emergy_wait': self.last_emergy_wait,
+            'emergy_wait_0': self.last_emergy_wait_0,
             'all_wait_per_lane_ave': self.last_sum_all_wait_per_lane_ave,
             'stop_time': self.last_stop_time,
-            'ave_wait': np.around(self.last_sum_all_wait / (self.n.sum_vehicle_of_three_lane() + self.w.sum_vehicle_of_three_lane() + self.e.sum_vehicle_of_three_lane() + self.s.sum_vehicle_of_three_lane()), 2)
+            'ave_wait': np.around(self.last_sum_all_wait / (self.n.sum_vehicle_of_three_lane() + self.w.sum_vehicle_of_three_lane() + self.e.sum_vehicle_of_three_lane() + self.s.sum_vehicle_of_three_lane()), 2),
+            'emergy_max_wait': self.last_sum_emergy_max_wait,
+            'emergy_max_wait_0': self.last_sum_emergy_max_wait_0,
         }
 
     def get_waiting_time_per_lane_junction(self):

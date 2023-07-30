@@ -5,7 +5,7 @@ import torch
 
 def parse_args():
     argparser = argparse.ArgumentParser(description=__doc__)
-    argparser.add_argument('--sumo_cfg_file', type=str, default='sumo_integration/examples/gong_ten_cross_one.sumocfg', help='sumo configuration file')
+    argparser.add_argument('--sumo_cfg_file', type=str, default='sumo_integration/examples/gong_ten_cross_one_emergency.sumocfg', help='sumo configuration file')
     # argparser.add_argument('--sumo_cfg_file', type=str, default='examples/gong_ten_cross_one.sumocfg', help='sumo configuration file')
     argparser.add_argument('--carla-host',
                            metavar='H',

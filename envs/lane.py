@@ -9,3 +9,8 @@ class Lane:
         self.stop_time = 0
         self.name = name
         self.emerge_max_wait = 0
+        self.emergy_num_0 = 0  # 紧急车辆数目
+        self.emergy_wait_0 = 0
+        self.emerge_max_wait_0 = 0
+
+
