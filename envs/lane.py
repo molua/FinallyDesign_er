@@ -8,3 +8,4 @@ class Lane:
         self.emergy_wait = 0
         self.stop_time = 0
         self.name = name
+        self.emerge_max_wait = 0
